@@ -3,7 +3,7 @@ import RestApiClient from "../../commons/api/rest-client";
 
 
 const endpoint = {
-    person: '/person'
+    person: '/people' //CHANGED
 };
 
 function getPersons(callback) {
