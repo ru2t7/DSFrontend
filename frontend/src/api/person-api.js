@@ -1,7 +1,7 @@
 import api from "./axios";
-
 import axios from "axios";
 
+// Login - unchanged
 export async function login(username, password) {
     const response = await axios.post("http://localhost:8081/people/login", {
         username,
@@ -11,7 +11,7 @@ export async function login(username, password) {
     return response.data; // { token: "..." }
 }
 
-
+// Get all people - unchanged
 export async function getPeople() {
     const token = localStorage.getItem("token"); // JWT string
     const response = await axios.get("http://localhost:8081/people", {
@@ -22,56 +22,37 @@ export async function getPeople() {
     return response.data;
 }
 
+// Get a single person by ID - unchanged
 export const getPerson = async (id) =>
     (await api.get(`/people/${id}`)).data;
 
+// Create a new person - unchanged
 export const createPerson = async (person) =>
     await api.post("/people", person);
 
+// ------------------- New functions -------------------
 
+// Update an existing person
+export const updatePerson = async (id, person) => {
+    const token = localStorage.getItem("token");
+    const response = await axios.put(`http://localhost:8081/people/${id}`, person, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+};
 
-// import {HOST} from '../../commons/hosts';
-// import RestApiClient from "../../commons/api/rest-client";
-//
-//
-// const endpoint = {
-//     person: '/people' //CHANGED
-// };
-//
-// function getPersons(callback) {
-//     let request = new Request(HOST.backend_api + endpoint.person, {
-//         method: 'GET',
-//     });
-//     console.log(request.url);
-//     RestApiClient.performRequest(request, callback);
-// }
-//
-// function getPersonById(params, callback){
-//     let request = new Request(HOST.backend_api + endpoint.person + params.id, {
-//        method: 'GET'
-//     });
-//
-//     console.log(request.url);
-//     RestApiClient.performRequest(request, callback);
-// }
-//
-// function postPerson(user, callback){
-//     let request = new Request(HOST.backend_api + endpoint.person , {
-//         method: 'POST',
-//         headers : {
-//             'Accept': 'application/json',
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(user)
-//     });
-//
-//     console.log("URL: " + request.url);
-//
-//     RestApiClient.performRequest(request, callback);
-// }
-//
-// export {
-//     getPersons,
-//     getPersonById,
-//     postPerson
-// };
+// Delete a person
+export const deletePerson = async (id) => {
+    const token = localStorage.getItem("token");
+    await axios.delete(`http://localhost:8081/people/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+};
+
+export async function getPersonById(id) {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(`http://localhost:8081/people/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+}

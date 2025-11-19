@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import PeoplePage from "./pages/PeoplePage";
 import RegisterPage from "./pages/RegisterPage";
 import DevicesPage from "./pages/DevicesPage";
+import DeviceAssignmentPage from "./pages/DeviceAssignmentPage";
 import { jwtDecode } from "jwt-decode";
 
 
@@ -57,6 +58,7 @@ export default function App() {
 
                     {/* Fallback for unknown routes */}
                     <Route path="*" element={<Navigate to="/devices" replace />} />
+                    <Route path="/device-assignment" element={<DeviceAssignmentPage />} />
                 </Routes>
             </BrowserRouter>
         </AuthProvider>

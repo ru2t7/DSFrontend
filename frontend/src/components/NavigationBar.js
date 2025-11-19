@@ -29,6 +29,7 @@ export default function NavigationBar() {
         <nav style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
             {roles.includes("ADMIN") && <Link to="/people">People</Link>}
             <Link to="/devices">Devices</Link>
+            {roles.includes("ADMIN") && <Link to="/device-assignment">Assign Devices</Link>}
             <button onClick={logout}>Logout</button>
         </nav>
     );
