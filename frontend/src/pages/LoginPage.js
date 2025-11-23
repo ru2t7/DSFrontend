@@ -12,16 +12,19 @@ export default function LoginPage() {
     async function submit(e) {
         e.preventDefault();
         try {
-            // ✅ Call the login API and extract the JWT string
-            const { token } = await login(username, password); // destructure token from response
+            console.log("Attempting login with:", { username }); // Debug log
 
-            // ✅ Store the JWT in context
+            const response = await login(username, password);
+            console.log("Login Response:", response); // See what came back
+
+            // Check if the response actually has a token
+            if (!response || !response.token) {
+                throw new Error("No token received from server!");
+            }
+
+            const { token } = response;
             setToken(token);
-
-            // ✅ Optionally store it in localStorage for persistence across reloads
             localStorage.setItem("token", token);
-
-            // ✅ Redirect to PeoplePage
             navigate("/");
         } catch {
             alert("Invalid login");

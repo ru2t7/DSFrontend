@@ -12,6 +12,16 @@ RUN npm install
 # Copy the rest of the source code
 COPY . .
 
+# --- NEW SECTION: ACCEPT BUILD ARGUMENTS ---
+
+#ARG REACT_APP_PERSON_API_HOST
+#ARG REACT_APP_DEVICE_API_HOST
+#ENV REACT_APP_PERSON_API_HOST=$REACT_APP_PERSON_API_HOST
+#ENV REACT_APP_DEVICE_API_HOST=$REACT_APP_DEVICE_API_HOST
+
+ENV REACT_APP_PERSON_API_HOST="http://localhost/api_person"
+ENV REACT_APP_DEVICE_API_HOST="http://localhost/api_device"
+
 # Build the React app
 RUN npm run build
 
