@@ -2,31 +2,65 @@ import { useEffect, useState } from "react";
 import { getPeople, getPersonById, createPerson, updatePerson, deletePerson } from "../api/person-api";
 import NavigationBar from "../components/NavigationBar";
 
-// 🎨 Define styles outside or inside the component
-const inputStyle = { margin: "5px", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" };
+// 🎨 Define general styles
+const generalStyles = {
+    container: {
+        padding: "30px",
+        fontFamily: "Arial, sans-serif",
+        backgroundColor: "#f9f9f9"
+    },
+    formBox: {
+        background: "white",
+        padding: "25px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.05)",
+        marginBottom: "30px"
+    },
+    table: {
+        width: "100%",
+        borderCollapse: "collapse",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.05)",
+        backgroundColor: "white"
+    },
+    th: {
+        padding: "15px",
+        borderBottom: "3px solid #007bff",
+        textAlign: "left",
+        backgroundColor: "#eaf5ff",
+        fontWeight: "bold",
+        color: "#333"
+    },
+    td: {
+        padding: "12px",
+        borderBottom: "1px solid #eee",
+        verticalAlign: "middle"
+    },
+    input: {
+        margin: "8px 10px 8px 0", // More space between inputs
+        padding: "10px",
+        borderRadius: "6px",
+        border: "1px solid #ccc" ,
+        minWidth: '150px' // Ensure minimum size
+    }
+};
 
 export default function PeoplePage() {
     const [people, setPeople] = useState([]);
     const [allAddresses, setAllAddresses] = useState([]);
-    // ✅ FIX 1: Initialize form state with 'role'
     const [form, setForm] = useState({
         username: "",
         name: "",
         age: "",
         address: "",
         password: "",
-        role: "USER"
+        role: "USER" // Default role
     });
     const [editingId, setEditingId] = useState(null);
 
-    const thStyle = {
-        padding: "8px",
-        borderBottom: "2px solid #ccc",
-        textAlign: "left"
-    };
-    const tdStyle = {
-        padding: "8px"
-    };
+    // Apply specific styles for headers and cells
+    const thStyle = generalStyles.th;
+    const tdStyle = generalStyles.td;
+    const inputStyle = generalStyles.input;
 
     useEffect(() => {
         loadPeople();
@@ -50,14 +84,13 @@ export default function PeoplePage() {
     }
 
     function resetForm() {
-        // ✅ Uses the cleaned up state structure
         setForm({ username: "", name: "", age: "", address: "", password: "", role: "USER" });
         setEditingId(null);
     }
 
     async function handleSubmit() {
         try {
-            // ✅ Ensure the payload includes the role
+            // Ensure age is a number and password is deleted if empty on update
             const payload = { ...form, age: Number(form.age) };
             if (!payload.password) delete payload.password;
 
@@ -77,7 +110,8 @@ export default function PeoplePage() {
                 alert("Error: This username is already taken. Please choose another.");
             } else if (err.response && err.response.data) {
                 // Try to show server message
-                alert(`Error: ${err.response.data.message || "Operation failed"}`);
+                const msg = err.response.data.message || (err.response.data.title ? err.response.data.title : "Operation failed");
+                alert(`Error: ${msg}`);
             } else {
                 alert("An unexpected error occurred.");
             }
@@ -93,8 +127,7 @@ export default function PeoplePage() {
                 age: personDetails.age,
                 address: personDetails.address || "",
                 password: "",
-                // ✅ FIX 3: Update role when editing
-                role: personDetails.role || "USER"
+                role: personDetails.role || "USER" // Ensure role is preserved for editing
             });
             setEditingId(personDetails.id);
         } catch (err) {
@@ -104,6 +137,7 @@ export default function PeoplePage() {
     }
 
     async function handleDelete(id) {
+        if(!window.confirm("Are you sure you want to delete this user?")) return;
         try {
             await deletePerson(id);
             loadPeople();
@@ -111,23 +145,38 @@ export default function PeoplePage() {
             console.error(err);
             alert("Failed to delete user.");
         }
-        // ❌ FIX 2: Removed redundant loadPeople() call here
     }
+
+    // Helper to render role badge
+    const RoleBadge = ({ role }) => {
+        const isAdmin = role === 'ADMIN';
+        const badgeStyle = {
+            padding: "4px 8px",
+            borderRadius: "12px",
+            fontSize: "0.85em",
+            fontWeight: "bold",
+            backgroundColor: isAdmin ? '#d4edda' : '#cce5ff', // Light green/blue
+            color: isAdmin ? '#155724' : '#004085'           // Dark green/blue text
+        };
+        return <span style={badgeStyle}>{role || "USER"}</span>;
+    };
+
 
     return (
         <div>
             <NavigationBar/>
-            <div style={{padding: "20px", fontFamily: "Arial, sans-serif"}}>
-                <h2>People</h2>
-                <div style={{background: "#f9f9f9", padding: "20px", borderRadius: "8px", marginBottom: "20px"}}>
-                    <h3>{editingId ? "Edit Person" : "Add Person"}</h3>
+            <div style={generalStyles.container}>
+                <h1 style={{color: '#333', marginBottom: '20px'}}>User Management</h1>
+
+                <div style={generalStyles.formBox}>
+                    <h3>{editingId ? "Edit Person" : "Add New Person"}</h3>
 
                     <input
                         style={inputStyle}
                         placeholder="Username"
                         value={form.username}
                         onChange={e => setForm({...form, username: e.target.value})}
-                        disabled={!!editingId}
+                        disabled={!!editingId} // Disable username edit
                     />
                     <input
                         style={inputStyle}
@@ -155,7 +204,6 @@ export default function PeoplePage() {
                         ))}
                     </datalist>
 
-                    {/* ✅ FIX 1: Role Dropdown added to UI */}
                     <select
                         style={inputStyle}
                         value={form.role}
@@ -173,26 +221,27 @@ export default function PeoplePage() {
                         onChange={e => setForm({...form, password: e.target.value})}
                     />
 
-                    <div style={{marginTop: "10px"}}>
+                    <div style={{marginTop: "15px"}}>
                         <button onClick={handleSubmit} style={{
-                            padding: "8px 16px",
+                            padding: "10px 20px",
                             backgroundColor: "#007bff",
                             color: "white",
                             border: "none",
-                            borderRadius: "4px",
+                            borderRadius: "6px",
                             cursor: "pointer",
-                            marginRight: "10px"
+                            marginRight: "10px",
+                            fontWeight: "bold"
                         }}>
                             {editingId ? "Update User" : "Add User"}
                         </button>
 
                         {editingId && (
                             <button onClick={resetForm} style={{
-                                padding: "8px 16px",
+                                padding: "10px 20px",
                                 backgroundColor: "#6c757d",
                                 color: "white",
                                 border: "none",
-                                borderRadius: "4px",
+                                borderRadius: "6px",
                                 cursor: "pointer"
                             }}>
                                 Cancel
@@ -200,11 +249,12 @@ export default function PeoplePage() {
                         )}
                     </div>
                 </div>
-                <table style={{width: "100%", borderCollapse: "collapse", marginTop: "20px"}}>
+                <table style={generalStyles.table}>
                     <thead>
-                    <tr style={{background: "#f0f0f0"}}>
+                    <tr style={{borderBottom: "1px solid #ccc"}}>
                         <th style={thStyle}>Username</th>
                         <th style={thStyle}>Name</th>
+                        <th style={thStyle}>Role</th>
                         <th style={thStyle}>Age</th>
                         <th style={thStyle}>Address</th>
                         <th style={thStyle}>Actions</th>
@@ -213,16 +263,17 @@ export default function PeoplePage() {
 
                     <tbody>
                     {people.map(p => (
-                        <tr key={p.id} style={{borderBottom: "1px solid #ccc"}}>
+                        <tr key={p.id}>
                             <td style={tdStyle}>{p.username}</td>
                             <td style={tdStyle}>{p.name}</td>
+                            <td style={tdStyle}><RoleBadge role={p.role} /></td> {/* ✅ Display Badge */}
                             <td style={tdStyle}>{p.age}</td>
                             <td style={tdStyle}>{p.address || "-"}</td>
                             <td style={tdStyle}>
-                                <button onClick={() => handleEdit(p)} style={{marginRight: "8px"}}>
+                                <button onClick={() => handleEdit(p)} style={{marginRight: "8px", padding: "6px 12px", border: "1px solid #ccc", borderRadius: "4px", cursor: "pointer"}}>
                                     Edit
                                 </button>
-                                <button onClick={() => handleDelete(p.id)} style={{color: "red"}}>
+                                <button onClick={() => handleDelete(p.id)} style={{color: "white", backgroundColor: "#dc3545", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer"}}>
                                     Delete
                                 </button>
                             </td>

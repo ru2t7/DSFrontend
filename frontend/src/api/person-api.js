@@ -4,7 +4,7 @@ import axios from "axios";
 // const HOST_PREFIX = process.env.REACT_APP_PERSON_API_HOST || "";
 // const API_BASE = `${HOST_PREFIX}/people`;
 
-const API_BASE = "http://localhost/api_person/people";
+export const API_BASE = "http://localhost/api_person/people";
 
 console.log("🚀 VERSION_TEST_100: Reading from Absolute Path!");
 
