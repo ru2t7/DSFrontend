@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
+const TARGET_CLIENT_ID = "cdeb048b-1998-42e6-9b61-d69cdc2029cc";
+
 // 🎨 Define the styles object
 const styles = {
     navbar: {
@@ -57,17 +59,27 @@ export default function NavigationBar() {
     if (!token) return null;
 
     let roles = [];
+    let userId = null;
+
     try {
         const decoded = jwtDecode(token);
         // console.log(jwtDecode(token)); // Keep this line commented or remove in production
         // Handles both singular 'role' and plural 'roles' claims
         roles = decoded.roles || (decoded.role ? [decoded.role] : []);
+        userId = decoded.sub || decoded.name;
     } catch(err) {
         console.error("Failed to decode JWT", err);
         // Fallback: If token is invalid, log out the user
         logout();
         return null;
     }
+
+    const isAdmin = roles.includes("ADMIN");
+    // ➡️ 3. Check if the authenticated user's ID matches the target ID
+    const isTargetClient = userId && userId === TARGET_CLIENT_ID;
+
+    // Show Monitoring link if user is ADMIN OR if user is the specific TARGET_CLIENT_ID
+    const showMonitoringLink = isAdmin || isTargetClient;
 
     function logout() {
         setToken(null);
@@ -117,6 +129,10 @@ export default function NavigationBar() {
 
                 {/* Admin Only Link */}
                 {roles.includes("ADMIN") && <NavLink to="/device-assignment">Assign Devices</NavLink>}
+
+                {/* ➡️ DYNAMIC MONITORING LINK */}
+                {showMonitoringLink && <NavLink to="/monitoring-data">Monitoring</NavLink>}
+
             </div>
 
             <LogoutButton />

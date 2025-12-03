@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import PeoplePage from "./pages/PeoplePage";
 import RegisterPage from "./pages/RegisterPage";
 import DevicesPage from "./pages/DevicesPage";
+import MonitorPage from "./pages/MonitorPage";
 import DeviceAssignmentPage from "./pages/DeviceAssignmentPage";
 import { jwtDecode } from "jwt-decode";
 
@@ -52,6 +53,16 @@ export default function App() {
                         element={
                             <PrivateRoute>
                                 <DevicesPage />
+                            </PrivateRoute>
+                        }
+                    />
+
+                    {/* ➡️ CRITICAL ADDITION: MONITORING PAGE ROUTE */}
+                    <Route
+                        path="/monitoring-data"
+                        element={
+                            <PrivateRoute> {/* Wrap in PrivateRoute for authentication */}
+                                <MonitorPage />
                             </PrivateRoute>
                         }
                     />
