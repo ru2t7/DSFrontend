@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { getPeople, getPersonById, createPerson, updatePerson, deletePerson } from "../api/person-api";
 import NavigationBar from "../components/NavigationBar";
-
+import ChatComponent from "../components/ChatComponent";
+import { AuthContext } from "../auth/AuthContext"; // 2. Import AuthContext
 // 🎨 Define general styles
 const generalStyles = {
     container: {
@@ -61,7 +62,7 @@ export default function PeoplePage() {
     const thStyle = generalStyles.th;
     const tdStyle = generalStyles.td;
     const inputStyle = generalStyles.input;
-
+    const { token } = useContext(AuthContext); // 3. Extract token from context
     useEffect(() => {
         loadPeople();
     }, []);
@@ -164,6 +165,7 @@ export default function PeoplePage() {
 
     return (
         <div>
+            <ChatComponent token={token} />
             <NavigationBar/>
             <div style={generalStyles.container}>
                 <h1 style={{color: '#333', marginBottom: '20px'}}>User Management</h1>

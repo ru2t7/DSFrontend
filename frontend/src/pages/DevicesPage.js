@@ -3,6 +3,7 @@ import { getDevices, getDeviceById, createDevice, updateDevice, deleteDevice } f
 import { AuthContext } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 import NavigationBar from "../components/NavigationBar";
+import ChatComponent from "../components/ChatComponent";
 
 // 🎨 Define general styles, consistent with PeoplePage
 const generalStyles = {
@@ -79,7 +80,7 @@ export default function DevicesPage() {
     const inputStyle = generalStyles.input;
     const { setToken } = useContext(AuthContext); // Keep if needed elsewhere
     const navigate = useNavigate();               // Keep if needed elsewhere
-
+    const { token } = useContext(AuthContext); // 3. Extract token from context
     useEffect(() => {
         loadDevices();
     }, []);
@@ -154,6 +155,7 @@ export default function DevicesPage() {
 
     return (
         <div>
+            <ChatComponent token={token} />
             <NavigationBar />
             <div style={generalStyles.container}>
                 <h1 style={{color: '#333', marginBottom: '20px'}}>Device Inventory</h1>

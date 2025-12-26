@@ -4,6 +4,7 @@ import { fetchConsumptionData, SIMULATED_DEVICE_LIST } from "../api/monitor-api"
 import { AuthContext } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 import NavigationBar from "../components/NavigationBar";
+import ChatComponent from "../components/ChatComponent";
 
 // --- Styling Constants (Copied from DevicesPage) ---
 const generalStyles = {
@@ -58,7 +59,7 @@ export default function MonitorPage() {
     // Hooks from your original structure
     const { isAuthenticated, setToken } = useContext(AuthContext); // Get setToken for logout handling
     const navigate = useNavigate();
-
+    const { token } = useContext(AuthContext); // 3. Extract token from context
     // 1. Authentication/Authorization Check (Similar to DevicesPage/PeoplePage)
     useEffect(() => {
         // If we are not authenticated, attempt to redirect to login.
@@ -110,6 +111,7 @@ export default function MonitorPage() {
 
     return (
         <div>
+            <ChatComponent token={token} />
             <NavigationBar />
             <div style={generalStyles.container}>
                 <h1 style={generalStyles.h1}>Energy Consumption Visualization</h1>

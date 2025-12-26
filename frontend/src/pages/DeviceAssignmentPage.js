@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { getAssignments, assignDeviceToUser, removeDeviceFromUser } from "../api/device-api";
 import { getDevices } from "../api/device-api";
 import { getPeople } from "../api/person-api";
 import NavigationBar from "../components/NavigationBar";
-
+import ChatComponent from "../components/ChatComponent";
+import { AuthContext } from "../auth/AuthContext"; // 2. Import AuthContext
 // 🎨 Define general styles, consistent with other pages
 const generalStyles = {
     container: {
@@ -74,7 +75,7 @@ export default function DeviceAssignmentPage() {
 
     const thStyle = generalStyles.th;
     const tdStyle = generalStyles.td;
-
+    const { token } = useContext(AuthContext); // 3. Extract token from context
     useEffect(() => {
         loadDevices();
         loadUsers();
@@ -141,6 +142,7 @@ export default function DeviceAssignmentPage() {
 
     return (
         <div>
+            <ChatComponent token={token} />
             <NavigationBar />
             <div style={generalStyles.container}>
                 <h1 style={{color: '#333', marginBottom: '20px'}}>Device Assignment</h1>
