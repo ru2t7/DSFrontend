@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs/lib/stomp.js';
-
+import { toast } from 'react-toastify';
 const WebSocketNotification = ({token}) => {
     useEffect(() => {
 
@@ -18,9 +18,23 @@ const WebSocketNotification = ({token}) => {
 
                 // 2. Subscribe to the exact topic used in your Java NotificationConsumer
                 stompClient.subscribe('/topic/notifications', (notification) => {
+
                     if (notification.body) {
-                    // 3. Display the alert to the user
-                    alert("⚠️ OVERCONSUMPTION ALERT: " + notification.body);
+                        let displayMessage = "";
+                        try{
+                        const alertData = JSON.parse(notification.body);
+                            displayMessage = alertData.content || alertData.message || JSON.stringify(alertData);
+                        }catch(e){
+                            // If it's NOT JSON (just a string), use the body directly
+                            displayMessage = notification.body;
+                        }
+                    // alert("⚠️ OVERCONSUMPTION ALERT: " + notification.body);
+                        // 🚀 REPLACE alert() WITH toast.error()
+                        toast.error(displayMessage, {
+                            position: "top-right",
+                            autoClose: 10000,
+                            theme: "colored",
+                        });
                 }
             });
         }, (error) => {

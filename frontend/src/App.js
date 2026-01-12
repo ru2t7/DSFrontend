@@ -11,6 +11,8 @@ import MonitorPage from "./pages/MonitorPage";
 import DeviceAssignmentPage from "./pages/DeviceAssignmentPage";
 import { jwtDecode } from "jwt-decode";
 import NotificationComponent from './components/NotificationComponent'; // Adjust path as needed
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AdminRoute({ children }) {
     const token = localStorage.getItem("token");
@@ -45,6 +47,7 @@ function AppContent() {
     return (
         <>
             <NotificationComponent token={token} />
+            <ToastContainer position="top-right" autoClose={5000} /> {/* ⬅️ Add this */}
             <BrowserRouter>
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
